@@ -1,4 +1,4 @@
-#Thesis Modelling activated carbon adsorption kinetics for removal of micropollutants from wastewater
+# Thesis Modelling activated carbon adsorption kinetics for removal of micropollutants from wastewater
 
 ### Mathieu Coghe
 - PSDM = comprehensive mass-transfer model "Pore Surface Diffusion Model", strong candidate for modelling adsorption of OMPs onto GAC
