@@ -66,7 +66,7 @@ def run_MP_helper(test_column, k, invN, compound, k_mult):
     return [k, invN, ssqs.values[0][0], compound, k_mult]
 
 class PSDM():
-    def __init__(self, column_data, comp_data, rawdata_df, **kw):
+    def __init__(self, column_data, comp_data, rawdata_df,A1_kfit,A2_kfit,A3_kfit,A4_kfit, **kw):
         '''
         column_data: contains specific characteristics of the column (pandas_df)
             'L'     = length (cm)
@@ -129,6 +129,12 @@ class PSDM():
         self.psdm_Ds = 0
         self.K_mult_time = [] #between 0 and 1
         self.K_time = []
+        
+        #//Mathieu Kfittingtool:
+        self.A1_kfittingtool = A1_kfit
+        self.A2_kfittingtool = A2_kfit
+        self.A3_kfittingtool = A3_kfit
+        self.A4_kfittingtool = A4_kfit
         
         self.project_name = kw.get('project_name','PSDM')
         
@@ -355,6 +361,7 @@ class PSDM():
 # =============================================================================
 # end __init__
 # =============================================================================
+
     def __get_fouling_params(self):
         '''
         water= [Rhine, Portage, Karlsruhe, Wausau, Haughton]
@@ -383,10 +390,14 @@ class PSDM():
                     b1[comp] = pfas_dict['Ave'][0]
                     b2[comp] = pfas_dict['Ave'][1]
                     
-        rk1 = b1 * a1 + b2
-        rk2 = b1 * a2
-        rk3 = b1 * a3
-        rk4 = b1 * a4                 #no factor of 100, in exponent (should there be b1?)
+        #//Mathieu Kfittingtool:
+        
+        rk1 = self.A1_kfittingtool
+        rk2 = self.A2_kfittingtool
+        rk3 = self.A3_kfittingtool
+        rk4 = self.A4_kfittingtool    #no factor of 100, in exponent (should there be b1?)
+        
+        
         print('//Mathieu: fouling parameters:')
         print('a1: ',a1)
         print('a2: ',a2)
@@ -399,6 +410,7 @@ class PSDM():
         print('rk3: ',rk3)
         print('rk4: ',rk4)
         return rk1, rk2, rk3, rk4
+  
     
     def __fouled_k_new(self, t):
         # works on unconverted time
@@ -406,9 +418,12 @@ class PSDM():
         if type(t) == np.ndarray:
             data_store = {}
             for comp in self.compounds:
-                k_mult_pd = self.rk1_store[comp] + \
-                            self.rk2_store[comp] * t + \
-                            self.rk3_store[comp] * np.exp(self.rk4_store[comp] * t)
+                
+                #//Mathieu Kfittingtool:
+                
+                k_mult_pd = self.A1_kfittingtool + \
+                            self.A2_kfittingtool * t + \
+                            self.A3_kfittingtool * np.exp(self.A4_kfittingtool * t)
                 
                 k_mult_pd[k_mult_pd < 1e-3] = 1e-3
                 
@@ -418,11 +433,11 @@ class PSDM():
                 #//Mathieu:
                 self.K_mult_time = k_mult_pd
                 self.K_time.extend(t)
-                print('//Mathieu: k_mult_pd: ',k_mult_pd)
+                #print('//Mathieu: k_mult_pd: ',k_mult_pd)
                 #print(self.K_time)
                 
             return data_store
-        
+
     def __calculate_capacity(self, compound):
         ## retunrs k, q_meas, breakthrough_code, breakthrough_time, aveC, k_function, foul_mult_est
         k = 0.

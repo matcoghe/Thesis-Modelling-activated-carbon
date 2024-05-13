@@ -127,7 +127,7 @@ class PSDM():
         #//Mathieu:
         self.psdm_teller = 0
         self.psdm_Ds = 0
-        self.K_new_time = []
+        self.K_mult_time = []
         self.K_time = []
         
         self.project_name = kw.get('project_name','PSDM')
@@ -415,10 +415,10 @@ class PSDM():
                                             k_mult_pd, \
                                             fill_value='extrapolate')
                 #//Mathieu:
-                self.K_new_time = k_mult_pd
+                self.K_mult_time = k_mult_pd
                 self.K_time.extend(t)
                 print('//Mathieu: k_mult_pd: ',k_mult_pd[:5],' ...')
-                #print(self.K_new_time)
+                #print(self.K_mult_time)
                 #print(self.K_time)
             return data_store
         
