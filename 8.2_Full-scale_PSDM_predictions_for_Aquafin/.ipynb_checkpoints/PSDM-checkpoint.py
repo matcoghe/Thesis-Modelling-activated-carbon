@@ -130,6 +130,8 @@ class PSDM():
         
         #//Mathieu:
         self.psdm_teller = 0
+        self.psdm_kf = 0
+        self.psdm_Dp = 0
         self.psdm_Ds = 0
         self.K_mult_time = []
         self.K_time = []      
@@ -210,7 +212,7 @@ class PSDM():
         self.water_type = kw.get('water_type','Organic Free')
         self.chem_type = kw.get('chem_type', 'halogenated alkenes')
         #//Mathieu:
-        print('//Mathieu self.chem_type: ',self.chem_type)
+        # print('//Mathieu self.chem_type: ',self.chem_type)
         if 'Fouling alternative' in self.chem_type:
             
             #ChatGPT:
@@ -218,7 +220,7 @@ class PSDM():
             # Convert the first extracted number from string to integer
             if numbers:
                 number = int(numbers[0])
-                print('//Mathieu: % bed weight reduction: ',number)
+                # print('//Mathieu: % bed weight reduction: ',number)
                 
             self.wt = self.wt - self.wt*(number/100)        
             
@@ -417,7 +419,7 @@ class PSDM():
         elif 'Fouling alternative' in self.chem_type:
             self.water_type = 'Organic Free'
             self.chem_type = 'halogenated alkenes'
-            print('//Mathieu: you want alternative fouling calculation:')
+            # print('//Mathieu: you want alternative fouling calculation:')
             b1, b2 = foul_params['chemical'][self.chem_type]
             dummy_array = np.ones(len(self.compounds))
             b1 = pd.Series(b1 * dummy_array, index=self.compounds)
@@ -427,17 +429,17 @@ class PSDM():
         rk2 = b1 * a2
         rk3 = b1 * a3
         rk4 = b1 * a4 #no factor of 100, in exponent (should there be b1?)
-        print('//Mathieu: fouling parameters:')
-        print('a1: ',a1)
-        print('a2: ',a2)
-        print('a3: ',a3)
-        print('a4: ',a4)
-        print('b1: ',b1)
-        print('b2: ',b2)
-        print('rk1: ',rk1)
-        print('rk2: ',rk2)
-        print('rk3: ',rk3)
-        print('rk4: ',rk4)
+        # print('//Mathieu: fouling parameters:')
+        # print('a1: ',a1)
+        # print('a2: ',a2)
+        # print('a3: ',a3)
+        # print('a4: ',a4)
+        # print('b1: ',b1)
+        # print('b2: ',b2)
+        # print('rk1: ',rk1)
+        # print('rk2: ',rk2)
+        # print('rk3: ',rk3)
+        # print('rk4: ',rk4)
         return rk1, rk2, rk3, rk4
     
     def __fouled_k_new(self, t):
@@ -458,7 +460,7 @@ class PSDM():
                 #//Mathieu:
                 self.K_mult_time = k_mult_pd
                 self.K_time.extend(t)
-                print('//Mathieu: k_mult_pd: ',k_mult_pd[:5],' ...')
+                # print('//Mathieu: k_mult_pd: ',k_mult_pd[:5],' ...')
                 #print(self.K_mult_time)
                 #print(self.K_time)
             return data_store
@@ -1391,8 +1393,14 @@ class PSDM():
         multi_p = difl/(2*rad) # multiplier used for kf calculation
         ## calculate everything first, replace as needed
         kf_v = kf_calc(multi_p, self.re, sc, ebed, corr='Chern and Chien')
+        
+        #//Mathieu:
+        self.psdm_kf = kf_v
                     
         dp_v = (difl/(tortu))       #*column_prop.loc['epor'] #porosity not used in AdDesignS appendix, removed to match
+        
+        #//Mathieu:
+        self.psdm_Dp = dp_v
         
         self.mass_transfer_data = self.mass_transfer.copy()
         

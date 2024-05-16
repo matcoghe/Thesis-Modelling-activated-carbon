@@ -66,7 +66,7 @@ def run_MP_helper(test_column, k, invN, compound, k_mult):
     return [k, invN, ssqs.values[0][0], compound, k_mult]
 
 class PSDM():
-    def __init__(self, column_data, comp_data, rawdata_df,A1_kfit,A2_kfit,A3_kfit,A4_kfit, **kw):
+    def __init__(self, column_data, comp_data, rawdata_df,A1_kfit,A2_kfit,A3_kfit,A4_kfit,weightReduction, **kw):
         '''
         column_data: contains specific characteristics of the column (pandas_df)
             'L'     = length (cm)
@@ -205,6 +205,11 @@ class PSDM():
         self.L = column_data['L']
         self.diam = column_data['diam']
         self.wt = column_data['wt']
+        
+        #//Mathieu: small test with weight reduction fouling approach
+        if 'weightReductionTrue' in weightReduction:
+            self.wt = self.wt*0.508271
+            
         self.flrt = column_data['flrt']# * self.flow_mult
         self.rhop = column_data['rhop']
         self.rhof = column_data['rhof']
