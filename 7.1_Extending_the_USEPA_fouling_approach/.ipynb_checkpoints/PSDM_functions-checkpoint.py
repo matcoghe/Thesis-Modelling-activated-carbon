@@ -464,11 +464,11 @@ def process_raw_data_new(filename, rept_lim=0):
 ############################################################################## //Mathieu: calculating parameters b1 and b2
 comp_data = process_input_data('7.1_Input_PFHpA.xlsx', sheet_name='Properties')
 
-logKow = comp_data.loc['logKow']
-κ2 = comp_data.loc['κ2']
-Nam = comp_data.loc['Nam']
-alpha = comp_data.loc['α']
-Dz_hybrid = comp_data.loc['Dz(hybrid)']
+logKow = comp_data.loc['logKow']        # Fouling properties
+κ2 = comp_data.loc['κ2']                #
+Nam = comp_data.loc['Nam']              #
+alpha = comp_data.loc['α']              #
+Dz_hybrid = comp_data.loc['Dz(hybrid)'] #
 
 b1 = -0.0624 * logKow - 1.15 * np.log10(κ2) - 0.166 * Nam + 1.37
 b2 = 0.0441 * alpha + 0.406 * Dz_hybrid - 0.25
